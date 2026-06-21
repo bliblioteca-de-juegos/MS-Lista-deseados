@@ -3,6 +3,8 @@ package com.biblioteca.listadeseados.controller;
 import com.biblioteca.listadeseados.dto.ListaDeseadosRequestDTO;
 import com.biblioteca.listadeseados.dto.ListaDeseadosResponseDTO;
 import com.biblioteca.listadeseados.service.ListaDeseadosService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,17 +21,20 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v2/lista-deseados")
+@Tag(name = "Lista de deseados", description = "Operaciones de juegos deseados por usuario")
 @RequiredArgsConstructor
 public class ListaDeseadosController {
 
     private final ListaDeseadosService listaDeseadosService;
 
     @GetMapping
+    @Operation(summary = "Listar todos los elementos deseados")
     public List<ListaDeseadosResponseDTO> obtenerTodas() {
         return listaDeseadosService.obtenerTodas();
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obtener un elemento deseado por ID")
     public ResponseEntity<ListaDeseadosResponseDTO> obtenerPorId(@PathVariable Long id) {
         return listaDeseadosService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
@@ -37,23 +42,27 @@ public class ListaDeseadosController {
     }
 
     @GetMapping("/usuario/{usuarioId}")
+    @Operation(summary = "Listar juegos deseados por usuario")
     public List<ListaDeseadosResponseDTO> obtenerPorUsuario(@PathVariable Long usuarioId) {
         return listaDeseadosService.obtenerPorUsuario(usuarioId);
     }
 
     @PostMapping
+    @Operation(summary = "Agregar un juego a la lista de deseados")
     public ResponseEntity<ListaDeseadosResponseDTO> agregar(
             @Valid @RequestBody ListaDeseadosRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(listaDeseadosService.agregar(dto));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar un elemento de la lista")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         listaDeseadosService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/usuario/{usuarioId}/juego/{juegoId}")
+    @Operation(summary = "Eliminar un juego deseado por usuario y juego")
     public ResponseEntity<Void> eliminarPorUsuarioYJuego(
             @PathVariable Long usuarioId,
             @PathVariable Long juegoId) {
@@ -62,6 +71,7 @@ public class ListaDeseadosController {
     }
 
     @DeleteMapping("/usuario/{usuarioId}")
+    @Operation(summary = "Vaciar la lista de deseados de un usuario")
     public ResponseEntity<Void> vaciarPorUsuario(@PathVariable Long usuarioId) {
         listaDeseadosService.vaciarPorUsuario(usuarioId);
         return ResponseEntity.noContent().build();
